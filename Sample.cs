@@ -70,7 +70,7 @@ namespace Sample
                 return;
             }
 
-            byte[] servo_ids = { 1, 2, 9 };
+            byte[] servo_ids = { 1, 2, 3 };
             EZGripper gripper = new EZGripper(port_num, servo_ids);
 
             try
