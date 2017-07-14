@@ -137,6 +137,10 @@ namespace SakeRobotics
             }
             return result;
         }
+        public short read2byteSigned(byte servo_id, ushort address)
+        {
+            return unchecked((short)read2byte(servo_id, address));
+        }
         public void write1byte(byte servo_id, ushort address, byte data)
         {
             for (int i = 1; i <= RETRY_COUNT; i++)

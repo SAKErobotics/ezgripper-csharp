@@ -41,14 +41,14 @@ namespace SakeRobotics
         const ushort TORQUE_HOLD = 100;
 
         Sdk_wrapper sdk;
-        ushort[] zero_positions;
+        short[] zero_positions;
         byte[] servo_ids;
 
         public EZGripper(int port, byte[] servo_ids)
         {
             this.sdk = new Sdk_wrapper(port);
             this.servo_ids = servo_ids;
-            this.zero_positions = new ushort[servo_ids.Length];
+            this.zero_positions = new short[servo_ids.Length];
             for (int i = 0; i < zero_positions.Length; i++)
                 zero_positions[i] = 0;
         }
@@ -104,7 +104,7 @@ namespace SakeRobotics
             {
                 sdk.write2byte(servo_ids[i], 71, 1024 + 10);   // 7) Set "Goal Torque" Direction to CW and Value 10 - reduce load on servo
                 sdk.write2byte(servo_ids[i], 20, 0);           // 8) set "Multi turn offset" to 0
-                zero_positions[i] = sdk.read2byte(servo_ids[i], 36); // 9) read current position of servo
+                zero_positions[i] = sdk.read2byteSigned(servo_ids[i], 36); // 9) read current position of servo
             }
 
             Console.WriteLine("calibration done");
@@ -134,7 +134,7 @@ namespace SakeRobotics
                 { // go to position
                     sdk.write1byte(servo_ids[i], 70, 0);
                     sdk.write2byte(servo_ids[i], 30,
-                        (ushort)(zero_positions[i] + servo_position));
+                        unchecked((ushort)(zero_positions[i] + servo_position)));
                 }
             }
 
@@ -156,13 +156,13 @@ namespace SakeRobotics
             ushort[] positions = new ushort[servo_ids.Length];
             for (int i = 0; i < servo_ids.Length; i++)
             {
-                positions[i] = sdk.read2byte(servo_ids[i], 36);
-                if (positions[i] > zero_positions[i])
-                    positions[i] -= zero_positions[i];
+                short position = sdk.read2byteSigned(servo_ids[i], 36);
+                if (position > zero_positions[i])
+                    position -= zero_positions[i];
                 else
-                    positions[i] = 0;
+                    position = 0;
 
-                positions[i] = down_scale(positions[i], GRIP_MAX);
+                positions[i] = down_scale((ushort)position, GRIP_MAX);
             }
             return positions;
         }
