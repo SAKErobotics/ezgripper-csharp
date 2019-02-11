@@ -30,6 +30,7 @@
 *******************************************************************************/
 
 using System;
+using System.Runtime.InteropServices;
 using dynamixel_sdk;
 
 namespace SakeRobotics
@@ -52,7 +53,7 @@ namespace SakeRobotics
         public override void print()
         {
             Console.WriteLine("DynamixelTxRxException: " + error_code);
-            dynamixel.printTxRxResult(PROTOCOL_VERSION1, error_code);
+            Console.WriteLine(Marshal.PtrToStringAnsi(dynamixel.getTxRxResult(PROTOCOL_VERSION1, error_code)));
         }
     }
     public class DynamixelRxPacketException : DynamixelException
@@ -63,7 +64,7 @@ namespace SakeRobotics
         public override void print()
         {
             Console.WriteLine("DynamixelRxPacketException: " + error_code);
-            dynamixel.printRxPacketError(PROTOCOL_VERSION1, (byte)error_code);
+            Console.WriteLine(Marshal.PtrToStringAnsi(dynamixel.getRxPacketError(PROTOCOL_VERSION1, (byte)error_code)));
         }
     }
 
@@ -87,7 +88,7 @@ namespace SakeRobotics
                 if (throw_on_error)
                     throw new DynamixelTxRxException(dxl_comm_result);
 
-                dynamixel.printTxRxResult(PROTOCOL_VERSION1, dxl_comm_result);
+                Console.WriteLine(Marshal.PtrToStringAnsi(dynamixel.getTxRxResult(PROTOCOL_VERSION1, dxl_comm_result)));
                 return false;
             }
             byte dxl_error = dynamixel.getLastRxPacketError(port_num, PROTOCOL_VERSION1);
@@ -96,7 +97,7 @@ namespace SakeRobotics
                 if (throw_on_error)
                     throw new DynamixelRxPacketException(dxl_error);
 
-                dynamixel.printRxPacketError(PROTOCOL_VERSION1, dxl_error);
+                Console.WriteLine(Marshal.PtrToStringAnsi(dynamixel.getRxPacketError(PROTOCOL_VERSION1, dxl_error)));
                 return false;
             }
             return true;
